@@ -1,14 +1,14 @@
 <html>
     <head>
         <link href="./style.css" rel="stylesheet" />
-        <script src="../dist/google-maps-autocomplete-input.js"></script>
+        <script src="../dist/places-autocomplete.js"></script>
     </head>
     <body>
       <div class="autocomplete" style="width:300px;">
         <input id="autocomplete" type="text" name="myCountry" placeholder="Country">
       </div>
       <script>
-        const gmaInput = new googleMapsAutocompleteInput("<API_TOKEN>");
+        const paInput = new placesAutocomplete("<API_TOKEN>");
 
         const placeInput = document.getElementById('autocomplete');
 
@@ -22,7 +22,7 @@
           console.log(place_id, place_name);
         }
 
-        gmaInput.bindInput({
+        paInput.bindInput({
           input: placeInput,
           config: placeConfig,
           afterSelected: afterPlaceSelected

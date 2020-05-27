@@ -1,0 +1,10 @@
+{
+  "presets": ["@babel/preset-env"],
+  "plugins": ["@babel/transform-runtime"],
+  "env": {
+    "test": {
+      "presets": ["@babel/preset-env", "@babel/stage-0"]
+    }
+  },
+  "comments": false
+}

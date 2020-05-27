@@ -1,9 +1,11 @@
 import './style.css';
 
+let google;
+
 let defaultSessionToken;
 let autocompleteService;
 
-const generateFilterFromInputs = (inputs=[]) => {
+const generateFilterFromInputs = (inputs = []) => {
   let filter = '';
   inputs.forEach(input => {
     if (typeof input === 'object' && 'value' in input) {
@@ -16,20 +18,20 @@ const generateFilterFromInputs = (inputs=[]) => {
         }
       }
     }
-  }) 
+  });
 
   return filter;
-}
+};
 
 const ifGmapsLibraryExist = () => {
   try {
-    if ((typeof google !== 'undefined' && google && google.maps)) {
+    if (typeof google !== 'undefined' && google && google.maps) {
       return true;
     }
-  } catch(e) {
+  } catch (e) {
     return false;
   }
-}
+};
 
 const initAutocompleteService = async () => {
   let initInterval = null;
@@ -46,58 +48,58 @@ const initAutocompleteService = async () => {
           clearInterval(initInterval);
         }
       }
-    }
+    };
 
     init();
-    initInterval = setInterval(function() {
+    initInterval = setInterval(function () {
       init();
     }, 1000);
-  })
+  });
 };
 
-function googleMapsAutocompleteInput(API_TOKEN='', LANG_ID=null) {
+function placesAutocomplete(API_TOKEN = '', LANG_ID = null) {
   const defaultInputConfig = {
     countryCode: '',
     autocompleteType: [],
     onlyName: false,
-    filterInputs: []
-  }
+    filterInputs: [],
+  };
 
   if (!ifGmapsLibraryExist()) {
     let gmapsLibraryURL = `https://maps.googleapis.com/maps/api/js?key=${API_TOKEN}&libraries=places`;
     if (LANG_ID) {
       gmapsLibraryURL += `&language=${LANG_ID}`;
     }
-  
+
     document.write(`<script src="${gmapsLibraryURL}" async defer></script>`);
   }
-  
+
   this.bindInput = ({
-    input=null, 
-    config={}, 
-    afterSelected=null,
-    sessionToken=null
+    input = null,
+    config = {},
+    afterSelected = null,
+    sessionToken = null,
   }) => {
     if (!input) {
       return false;
     }
     let currentFocus;
-    
+
     if (sessionToken === null) {
       sessionToken = defaultSessionToken;
     }
 
-    config = {...defaultInputConfig, ...config}
-    
-    input.addEventListener('input', function(e) {
-      const filter = generateFilterFromInputs(config.filterInputs); 
+    config = { ...defaultInputConfig, ...config };
+
+    input.addEventListener('input', function () {
+      const filter = generateFilterFromInputs(config.filterInputs);
       let inputValue = this.value;
 
       if (filter) {
         inputValue = `${filter}, ${inputValue}`;
       }
 
-      if (!inputValue) { 
+      if (!inputValue) {
         return false;
       }
 
@@ -116,14 +118,17 @@ function googleMapsAutocompleteInput(API_TOKEN='', LANG_ID=null) {
             let place_name = predictions[i].description;
             if (config.onlyName) {
               place_name = predictions[i].structured_formatting.main_text;
-            } 
-          
+            }
+
             const dropdownElement = document.createElement('div');
-            dropdownElement.innerHTML = `<strong>${place_name.substr(0, inputValue.length)}</strong>`;
+            dropdownElement.innerHTML = `<strong>${place_name.substr(
+              0,
+              inputValue.length
+            )}</strong>`;
             dropdownElement.innerHTML += place_name.substr(inputValue.length);
             dropdownElement.setAttribute('place-name', place_name);
             dropdownElement.setAttribute('place-id', place_id);
-            dropdownElement.addEventListener('click', function(e) {
+            dropdownElement.addEventListener('click', function () {
               const place_id = this.getAttribute('place-id');
               if (typeof afterSelected === 'function') {
                 try {
@@ -132,18 +137,20 @@ function googleMapsAutocompleteInput(API_TOKEN='', LANG_ID=null) {
                   console.error(er);
                 }
               }
-              input.value = place_name; 
+              input.value = place_name;
               closeAllLists();
             });
             dropdown.appendChild(dropdownElement);
           }
         }
-      }
-      getAutocomplete(inputValue, autocompleteCallback); 
+      };
+      getAutocomplete(inputValue, autocompleteCallback);
     });
 
-    input.addEventListener('keydown', function(e) {
-      let dropdownElements = document.getElementById(`${this.id}-autocomplete-list`);
+    input.addEventListener('keydown', function (e) {
+      let dropdownElements = document.getElementById(
+        `${this.id}-autocomplete-list`
+      );
 
       if (dropdownElements) {
         dropdownElements = dropdownElements.getElementsByTagName('div');
@@ -152,12 +159,12 @@ function googleMapsAutocompleteInput(API_TOKEN='', LANG_ID=null) {
       if (e.keyCode == 40) {
         currentFocus++;
         addActive(dropdownElements);
-      } else if (e.keyCode == 38) { 
+      } else if (e.keyCode == 38) {
         currentFocus--;
         addActive(dropdownElements);
       } else if (e.keyCode == 13) {
         e.preventDefault();
-        if (currentFocus > -1 && x) {
+        if (currentFocus > -1 && dropdownElements) {
           dropdownElements[currentFocus].click();
         }
       }
@@ -167,58 +174,60 @@ function googleMapsAutocompleteInput(API_TOKEN='', LANG_ID=null) {
       if (!dropdownElements) {
         return false;
       }
-      
+
       removeActive(dropdownElements);
       if (currentFocus >= dropdownElements.length) {
         currentFocus = 0;
       }
       if (currentFocus < 0) {
-        currentFocus = (dropdownElements.length - 1);
+        currentFocus = dropdownElements.length - 1;
       }
 
       dropdownElements[currentFocus].classList.add('autocomplete-active');
-    }
+    };
 
     const removeActive = dropdownElements => {
-      for (let i = 0; i < elements.length; i++) {
+      for (let i = 0; i < dropdownElements.length; i++) {
         dropdownElements[i].classList.remove('gmaps-autocomplete-active');
       }
-    }
+    };
 
     const closeAllLists = element => {
-      const dropdownElements = document.getElementsByClassName('gmaps-autocomplete-items');
+      const dropdownElements = document.getElementsByClassName(
+        'gmaps-autocomplete-items'
+      );
       for (let i = 0; i < dropdownElements.length; i++) {
         if (element != dropdownElements[i] && element != input) {
           dropdownElements[i].parentNode.removeChild(dropdownElements[i]);
         }
       }
-    }
+    };
 
     const getAutocomplete = async (input, callback) => {
       if (!autocompleteService) {
         await initAutocompleteService();
       }
-      
+
       const request = {
-          input: input,
-          types: config.autocompleteType,
-          componentRestrictions: {
-            country: config.countryCode
-          },
-          sessionToken: sessionToken
-      }
+        input: input,
+        types: config.autocompleteType,
+        componentRestrictions: {
+          country: config.countryCode,
+        },
+        sessionToken: sessionToken,
+      };
 
       autocompleteService.getPlacePredictions(request, callback);
-    }
+    };
 
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
       closeAllLists(e.target);
     });
-  }
+  };
 }
 
 if (typeof module !== 'undefined' || !module.exports) {
-  global.googleMapsAutocompleteInput = googleMapsAutocompleteInput;
+  global.placesAutocomplete = placesAutocomplete;
 }
 
-export default googleMapsAutocompleteInput;
+export default placesAutocomplete;
