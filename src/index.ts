@@ -1,15 +1,25 @@
 import './style.css';
 
-let defaultSessionToken;
-let autocompleteService;
+let defaultSessionToken: string;
+let autocompleteService: any;
+
+type configType = {
+  countryCode: string;
+  autocompleteType: [];
+  onlyName: boolean;
+  filterInputs: [];
+};
+
+declare let google: any;
+declare let global: any;
 
 /**
  * _generate additional filter
- * @param {DOMElement} inputs _list of inputs from DOM
+ * @param {HTMLInputElement[]} inputs _list of inputs from DOM
  */
-const generateFilterFromInputs = (inputs = []) => {
+const generateFilterFromInputs = (inputs: HTMLInputElement[] = []) => {
   let filter = '';
-  inputs.forEach(input => {
+  inputs.forEach((input: HTMLInputElement) => {
     if (typeof input === 'object' && 'value' in input) {
       const inputName = input.value;
       if (inputName) {
@@ -27,7 +37,6 @@ const generateFilterFromInputs = (inputs = []) => {
 
 const ifGmapsLibraryExist = () => {
   try {
-    // eslint-disable-next-line no-undef
     if (typeof google !== 'undefined' && google && google.maps) {
       return true;
     }
@@ -37,13 +46,11 @@ const ifGmapsLibraryExist = () => {
 };
 
 const initAutocompleteService = async () => {
-  let initInterval = null;
+  let initInterval: number = null;
   return new Promise(resolve => {
     const init = () => {
       if (ifGmapsLibraryExist()) {
-        // eslint-disable-next-line no-undef
         defaultSessionToken = new google.maps.places.AutocompleteSessionToken();
-        // eslint-disable-next-line no-undef
         autocompleteService = new google.maps.places.AutocompleteService();
       }
 
@@ -56,14 +63,17 @@ const initAutocompleteService = async () => {
     };
 
     init();
-    initInterval = setInterval(function () {
+    initInterval = window.setInterval(function () {
       init();
     }, 1000);
   });
 };
 
-function placesAutocomplete(API_TOKEN = '', LANG_ID = null) {
-  const defaultInputConfig = {
+function placesAutocomplete(
+  API_TOKEN: '' = '',
+  LANG_ID: '' | null = null
+): void {
+  const defaultInputConfig: configType = {
     countryCode: '',
     autocompleteType: [],
     onlyName: false,
@@ -81,20 +91,23 @@ function placesAutocomplete(API_TOKEN = '', LANG_ID = null) {
 
   this.bindInput = ({
     input = null,
-    config = {},
+    config = defaultInputConfig,
     afterSelected = null,
     sessionToken = null,
+  }: {
+    input: HTMLInputElement | null;
+    config: configType | null;
+    afterSelected: any;
+    sessionToken: string | undefined;
   }) => {
     if (!input) {
       return false;
     }
-    let currentFocus;
+    let currentFocus: number;
 
     if (sessionToken === null) {
       sessionToken = defaultSessionToken;
     }
-
-    config = {...defaultInputConfig, ...config};
 
     input.addEventListener('input', function () {
       const filter = generateFilterFromInputs(config.filterInputs);
@@ -116,8 +129,7 @@ function placesAutocomplete(API_TOKEN = '', LANG_ID = null) {
       dropdown.setAttribute('class', 'gmaps-autocomplete-items');
       this.parentNode.appendChild(dropdown);
 
-      const autocompleteCallback = (predictions, status) => {
-        // eslint-disable-next-line no-undef
+      const autocompleteCallback = (predictions: any, status: string) => {
         if (status === google.maps.places.PlacesServiceStatus.OK) {
           for (let i = 0; i < predictions.length; i++) {
             const place_id = predictions[i].place_id;
@@ -138,6 +150,7 @@ function placesAutocomplete(API_TOKEN = '', LANG_ID = null) {
               const place_id = this.getAttribute('place-id');
               if (typeof afterSelected === 'function') {
                 try {
+                  console.log(predictions);
                   afterSelected(place_id, place_name);
                 } catch (er) {
                   console.error(er);
@@ -154,29 +167,31 @@ function placesAutocomplete(API_TOKEN = '', LANG_ID = null) {
     });
 
     input.addEventListener('keydown', function (e) {
-      let dropdownElements = document.getElementById(
+      const dropdownMenu: HTMLElement = document.getElementById(
         `${this.id}-autocomplete-list`
       );
 
-      if (dropdownElements) {
-        dropdownElements = dropdownElements.getElementsByTagName('div');
-      }
+      if (dropdownMenu) {
+        const dropdownElements: HTMLCollectionOf<HTMLDivElement> = dropdownMenu.getElementsByTagName(
+          'div'
+        );
 
-      if (e.keyCode == 40) {
-        currentFocus++;
-        addActive(dropdownElements);
-      } else if (e.keyCode == 38) {
-        currentFocus--;
-        addActive(dropdownElements);
-      } else if (e.keyCode == 13) {
-        e.preventDefault();
-        if (currentFocus > -1 && dropdownElements) {
-          dropdownElements[currentFocus].click();
+        if (e.keyCode == 40) {
+          currentFocus++;
+          addActive(dropdownElements);
+        } else if (e.keyCode == 38) {
+          currentFocus--;
+          addActive(dropdownElements);
+        } else if (e.keyCode == 13) {
+          e.preventDefault();
+          if (currentFocus > -1 && dropdownElements) {
+            dropdownElements[currentFocus].click();
+          }
         }
       }
     });
 
-    const addActive = dropdownElements => {
+    const addActive = (dropdownElements: HTMLCollectionOf<HTMLDivElement>) => {
       if (!dropdownElements) {
         return false;
       }
@@ -192,13 +207,15 @@ function placesAutocomplete(API_TOKEN = '', LANG_ID = null) {
       dropdownElements[currentFocus].classList.add('autocomplete-active');
     };
 
-    const removeActive = dropdownElements => {
+    const removeActive = (
+      dropdownElements: HTMLCollectionOf<HTMLDivElement>
+    ) => {
       for (let i = 0; i < dropdownElements.length; i++) {
         dropdownElements[i].classList.remove('gmaps-autocomplete-active');
       }
     };
 
-    const closeAllLists = element => {
+    const closeAllLists = (element?: EventTarget) => {
       const dropdownElements = document.getElementsByClassName(
         'gmaps-autocomplete-items'
       );
@@ -209,7 +226,7 @@ function placesAutocomplete(API_TOKEN = '', LANG_ID = null) {
       }
     };
 
-    const getAutocomplete = async (input, callback) => {
+    const getAutocomplete = async (input: string, callback: any) => {
       if (!autocompleteService) {
         await initAutocompleteService();
       }
@@ -225,13 +242,13 @@ function placesAutocomplete(API_TOKEN = '', LANG_ID = null) {
       autocompleteService.getPlacePredictions(request, callback);
     };
 
-    document.addEventListener('click', function (e) {
+    document.addEventListener('click', (e: MouseEvent) => {
       closeAllLists(e.target);
     });
   };
 }
 
-if (typeof module !== 'undefined' || !module.exports) {
+if (typeof module === 'undefined' || !module.exports) {
   global.placesAutocomplete = placesAutocomplete;
 }
 

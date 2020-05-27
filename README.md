@@ -1,4 +1,4 @@
-[![npm version](https://img.shields.io/npm/v/places-autocomplete.svg?style=flat)](https://www.npmjs.com/package/places-autocomplete) [![Bundlephobia](https://badgen.net/bundlephobia/minzip/places-autocomplete)](https://bundlephobia.com/result?p=places-autocomplete)
+[![npm version](https://img.shields.io/npm/v/places-autocomplete.svg?style=flat)](https://www.npmjs.com/package/places-autocomplete) [![Bundlephobia](https://badgen.net/bundlephobia/minzip/places-autocomplete)](https://bundlephobia.com/result?p=places-autocomplete) [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 
 ## Places Autocomplete
 
