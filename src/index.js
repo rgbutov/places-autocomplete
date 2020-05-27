@@ -1,10 +1,12 @@
 import './style.css';
 
-let google;
-
 let defaultSessionToken;
 let autocompleteService;
 
+/**
+ * _generate additional filter
+ * @param {DOMElement} inputs _list of inputs from DOM
+ */
 const generateFilterFromInputs = (inputs = []) => {
   let filter = '';
   inputs.forEach(input => {
@@ -25,6 +27,7 @@ const generateFilterFromInputs = (inputs = []) => {
 
 const ifGmapsLibraryExist = () => {
   try {
+    // eslint-disable-next-line no-undef
     if (typeof google !== 'undefined' && google && google.maps) {
       return true;
     }
@@ -38,7 +41,9 @@ const initAutocompleteService = async () => {
   return new Promise(resolve => {
     const init = () => {
       if (ifGmapsLibraryExist()) {
+        // eslint-disable-next-line no-undef
         defaultSessionToken = new google.maps.places.AutocompleteSessionToken();
+        // eslint-disable-next-line no-undef
         autocompleteService = new google.maps.places.AutocompleteService();
       }
 
@@ -89,7 +94,7 @@ function placesAutocomplete(API_TOKEN = '', LANG_ID = null) {
       sessionToken = defaultSessionToken;
     }
 
-    config = { ...defaultInputConfig, ...config };
+    config = {...defaultInputConfig, ...config};
 
     input.addEventListener('input', function () {
       const filter = generateFilterFromInputs(config.filterInputs);
@@ -112,6 +117,7 @@ function placesAutocomplete(API_TOKEN = '', LANG_ID = null) {
       this.parentNode.appendChild(dropdown);
 
       const autocompleteCallback = (predictions, status) => {
+        // eslint-disable-next-line no-undef
         if (status === google.maps.places.PlacesServiceStatus.OK) {
           for (let i = 0; i < predictions.length; i++) {
             const place_id = predictions[i].place_id;
@@ -216,7 +222,6 @@ function placesAutocomplete(API_TOKEN = '', LANG_ID = null) {
         },
         sessionToken: sessionToken,
       };
-
       autocompleteService.getPlacePredictions(request, callback);
     };
 
