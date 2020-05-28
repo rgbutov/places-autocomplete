@@ -2,7 +2,7 @@
 
 ## Places Autocomplete
 
-A custromized UI for Google Maps Places Autocomplete.
+Custom UI for Google Maps Places Autocomplete.
 
 ### Browser document object is requered.
 
@@ -38,7 +38,6 @@ const placeConfig = {
 const afterPlaceSelected = place => {
   console.log(place);
 }
-
 const placeInput = document.getElementById('dcity');
 // bind input with autocompletetion to input
 paInput.bindInput({
