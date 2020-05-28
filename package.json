@@ -1,6 +1,6 @@
 {
   "name": "places-autocomplete",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "_custom UI for Google Maps Places Autocomplete",
   "main": "dist/places-autocomplete.js",
   "scripts": {
