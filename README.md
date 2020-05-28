@@ -16,11 +16,13 @@ npm i -s places-autocomplete
 ```
 #### Script tag
 ```html
-<script src="/path/to/places-autocomplete.min.js"></script>
+<script src="/path/to/places-autocomplete.js"></script>
 ```
 
 ### Usage
 ```js
+// _for NODE.js
+import placesAutocomplete from 'places-autocomplete';
 // _init module, you need API_TOKEN from google console
 const paInput = new placesAutocomplete('<API_TOKEN>');
 const placeConfig = {
