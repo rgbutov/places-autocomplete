@@ -132,10 +132,12 @@ function placesAutocomplete(
       const autocompleteCallback = (predictions: any, status: string) => {
         if (status === google.maps.places.PlacesServiceStatus.OK) {
           for (let i = 0; i < predictions.length; i++) {
-            const place_id = predictions[i].place_id;
-            let place_name = predictions[i].description;
+            const place = predictions[i];
+            const place_id = place.place_id;
+            let place_name = place.description;
+
             if (config.onlyName) {
-              place_name = predictions[i].structured_formatting.main_text;
+              place_name = place.structured_formatting.main_text;
             }
 
             const dropdownElement = document.createElement('div');
@@ -147,11 +149,15 @@ function placesAutocomplete(
             dropdownElement.setAttribute('place-name', place_name);
             dropdownElement.setAttribute('place-id', place_id);
             dropdownElement.addEventListener('click', function () {
-              const place_id = this.getAttribute('place-id');
               if (typeof afterSelected === 'function') {
                 try {
-                  console.log(predictions);
-                  afterSelected(place_id, place_name);
+                  afterSelected({
+                    id: place.place_id,
+                    name: place_name,
+                    description: place.description,
+                    structured_formatting: place.structured_formatting,
+                    terms: place.terms,
+                  });
                 } catch (er) {
                   console.error(er);
                 }

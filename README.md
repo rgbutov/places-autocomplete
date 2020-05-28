@@ -34,8 +34,9 @@ const placeConfig = {
   filterInputs: []
 } 
 // _after dropdown selected callback
-const afterPlaceSelected = (place_id, place_name) => {
-  console.log(place_id, place_name);
+/* place: {id, name, description, structured_formatting, terms} */
+const afterPlaceSelected = place => {
+  console.log(place);
 }
 
 const placeInput = document.getElementById('dcity');
